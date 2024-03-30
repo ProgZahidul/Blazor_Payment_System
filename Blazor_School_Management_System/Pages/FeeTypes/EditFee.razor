@@ -1,0 +1,59 @@
+﻿@page "/editfee/{id:int}"
+@inject FeeTypeService FeeTypeService
+@inject NavigationManager NavigationManager
+
+<h1>Edit Fee Type</h1>
+
+@if (errorMessage != null)
+{
+    <p style="color: red;">@errorMessage</p>
+}
+
+@if (feeType == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <form @onsubmit="UpdateFeeType">
+        <div class="form-group">
+            <label for="feeTypeName">Fee Type Name:</label>
+            <input type="text" class="form-control" id="feeTypeName" @bind="feeType.TypeName" />
+        </div>
+        <button type="submit" class="btn btn-primary">Update Fee Type</button>
+    </form>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private FeeType feeType;
+    private string errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            feeType = await FeeTypeService.GetFeeTypeByIdAsync(Id);
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";
+        }
+    }
+
+    private async Task UpdateFeeType()
+    {
+        try
+        {
+            var result = await FeeTypeService.UpdateFeeTypeAsync(Id, feeType);
+            if(result)
+            NavigationManager.NavigateTo("/feelist");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";
+        }
+    }
+}

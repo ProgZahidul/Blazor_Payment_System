@@ -1,0 +1,41 @@
+﻿@page "/createfee"
+@inject FeeTypeService FeeTypeService
+@inject NavigationManager NavigationManager
+
+<h1>Create New Fee Type</h1>
+
+@if (errorMessage != null)
+{
+    <p style="color: red;">@errorMessage</p>
+}
+
+<form @onsubmit="CreateFeeTypes">
+    <div class="form-group">
+        <label for="feeTypeName">Fee Type Name:</label>
+        <input type="text" class="form-control" id="feeTypeName" @bind="newFeeType.TypeName" />
+    </div>
+
+    <!-- Add other form fields as needed -->
+
+    <button type="submit" class="btn btn-primary">Create Fee Type</button>
+</form>
+
+@code {
+    private FeeType newFeeType = new FeeType();
+    private string errorMessage;
+
+    private async Task CreateFeeTypes()
+    {
+        try
+        {
+            await FeeTypeService.CreateFeeTypeAsync(newFeeType);
+           
+            NavigationManager.NavigateTo("/feelist");
+
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";
+        }
+    }
+}
